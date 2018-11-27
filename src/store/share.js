@@ -23,6 +23,9 @@ const actions = {
     post.updated_at = firebase.firestore.FieldValue.serverTimestamp();
     await posts.doc(post.id).set(post);
   },
+  async deletePost(_, post_id) {
+    await posts.doc(post_id).delete();
+  },
   initShare: firebaseAction(({ bindFirebaseRef }, name) => {
     bindFirebaseRef('shares', db.collection('shares').where('name', '==', name));
   }),

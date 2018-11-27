@@ -36,10 +36,26 @@
                 {{createdAt(post.created_at)}}</small></p>
             <p class="subtitle is-6" v-if="post.URL"><a :href="post.URL">{{post.URL}}</a></p>
           </div>
+          <div class="media-right">
+            <button
+              v-if="user && user.id == post.user_id"
+              @click="deletePost(post.id)"
+              class="delete">
+            </button>
+          </div>
         </div>
         <div class="content">
           {{post.description}}
           <hr>
+          <router-link
+            :to="{
+              name: 'post',
+              params: {
+                name: $route.params.name,
+                post_id: post.id
+              }
+            }"
+            class="button is-success is-rounded">Comment!</router-link>
         </div>
       </div>
       <div class="card-image" v-if="isImage(post.URL)">
@@ -70,12 +86,11 @@ export default {
     },
   }),
   mounted() {
-    this.initShare(this.$route.params.name);
     this.initUsers();
+    this.initShare(this.$route.params.name);
   },
   watch: {
-    // eslint-disable-next-line object-shorthand
-    '$route.params.name'() {
+    '$route.params.name': () => {
       this.initShare(this.$route.params.name);
     },
     share() {
@@ -112,7 +127,7 @@ export default {
     isImage(url) {
       return url.match(/(png|jpeg|jpg|gif)$/);
     },
-    ...mapActions('share', ['createPost', 'initShare', 'initPosts']),
+    ...mapActions('share', ['createPost', 'initShare', 'initPosts', 'deletePost']),
     ...mapActions('users', {
       initUsers: 'init',
     }),
@@ -169,5 +184,8 @@ export default {
 
   .button.is-success {
     margin-left: 23em;
+  }
+  .button.is-success.is-rounded {
+    margin-left: 10em;
   }
 </style>
