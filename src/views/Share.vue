@@ -1,6 +1,6 @@
 <template>
   <section>
-    <button @click="showForm = !showForm" class="button is-primary">I want to Share!</button>
+    <button @click="showForm = !showForm" class="button is-primary" v-if="isLoggedIn">I want to Share!</button>
     <br>
     <form v-if="showForm" @submit.prevent="onCreatePost(post)">
       <b-field label="Title">
@@ -16,11 +16,6 @@
     </form>
     <br>
       <div class="card" v-for="post in posts" :key="post.id">
-        <div class="card-image" v-if="isImage(post.URL)">
-          <figure class="image">
-            <img :src="post.URL" alt="Placeholder image">
-          </figure>
-        </div>
         <div class="card-content">
           <div class="media">
             <div class="media-left">
@@ -30,17 +25,21 @@
             </div>
             <div class="media-content">
               <p class="title is-4">{{post.title}}</p>
-              <p class="subtitle is-6">@{{post.user_name}}</p>
+              <p class="subtitle is-6">@{{post.user_name}} {{post.created_at}}</p>
               <p class="subtitle is-6" v-if="post.URL"><a :href="post.URL">{{post.URL}}</a></p>
             </div>
           </div>
           <div class="content">
-              {{post.description}}
-              <br>
-              <hr>
-              <time datetime="2016-1-1">{{post.created_at}}</time>
-            </div>
+            {{post.description}}
+            <hr>
+          </div>
         </div>
+        <div class="card-image" v-if="isImage(post.URL)">
+          <figure class="image">
+            <img :src="post.URL" alt="Placeholder image">
+          </figure>
+        </div>
+        <hr>
       </div>
   </section>
 </template>
@@ -71,6 +70,7 @@ export default {
     },
   },
   computed: {
+    ...mapState('auth', ['user', 'isLoggedIn']),
     ...mapState('share', ['posts']),
     ...mapGetters('share', ['share']),
   },
@@ -81,7 +81,13 @@ export default {
     ...mapActions('share', ['createPost', 'initShare', 'initPosts']),
     async onCreatePost() {
       if (this.post.title && (this.post.description || this.post.URL)) {
-        await this.createPost(this.post);
+        this.createPost(this.post);
+        this.post = {
+          title: '',
+          description: '',
+          URL: '',
+        };
+        this.showForm = false;
       }
     },
   },
