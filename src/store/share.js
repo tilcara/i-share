@@ -10,7 +10,7 @@ const state = {
 };
 
 const getters = {
-  share: (state) => state.shares[0] ? state.shares[0] : {},
+  share: state => (state.shares[0] ? state.shares[0] : {}),
 };
 
 const actions = {
@@ -19,8 +19,6 @@ const actions = {
     post.id = result.id;
     post.share_id = getters.share.id;
     post.user_id = firebase.auth().currentUser.uid;
-    post.user_name = firebase.auth().currentUser.displayName;
-    post.user_avatar = firebase.auth().currentUser.photoURL;
     post.created_at = firebase.firestore.FieldValue.serverTimestamp();
     post.updated_at = firebase.firestore.FieldValue.serverTimestamp();
     await posts.doc(post.id).set(post);
